@@ -1,1 +1,3 @@
-# dumu-shanxing2
+# 入畫｜秋山歸憶
+
+《山行》學生版。首頁是 `index.html`，回憶小記與課後溫習在 `activities.html`。遊戲進度和分數儲存在目前的瀏覽器。
