@@ -1,11 +1,11 @@
 // Runs only for a celebration, then releases the canvas, animation and listeners.
 let overlay,timer,frame,hideListener,flight;
 export function clearCelebration(){clearTimeout(timer);cancelAnimationFrame(frame);flight?.cancel();flight=undefined;overlay?.remove();overlay=undefined;if(hideListener)document.removeEventListener('visibilitychange',hideListener);hideListener=undefined;}
-export function celebrate(){
+export function celebrate(duration=5000){
  clearCelebration();if(document.hidden)return;
- overlay=document.createElement('div');overlay.className='screen-fireworks';overlay.setAttribute('aria-hidden','true');
+ overlay=document.createElement('div');overlay.className='screen-fireworks';overlay.setAttribute('aria-hidden','true');overlay.style.animationDuration=duration+'ms';
  const reduced=matchMedia('(prefers-reduced-motion: reduce)').matches;
- if(reduced){overlay.classList.add('fireworks-still');overlay.innerHTML='<span class="still-star">✦ ✧ ✦</span>';document.body.append(overlay);timer=setTimeout(clearCelebration,1400);return;}
+ if(reduced){overlay.classList.add('fireworks-still');overlay.innerHTML='<span class="still-star">✦ ✧ ✦</span>';document.body.append(overlay);timer=setTimeout(clearCelebration,duration);return;}
  const canvas=document.createElement('canvas');canvas.className='vivid-fireworks';overlay.append(canvas);document.body.append(overlay);
  const width=innerWidth,height=innerHeight,dpr=Math.min(devicePixelRatio||1,1.5);canvas.width=Math.round(width*dpr);canvas.height=Math.round(height*dpr);
  const ctx=canvas.getContext('2d');if(!ctx){clearCelebration();return;}ctx.scale(dpr,dpr);ctx.lineCap='round';
@@ -16,7 +16,7 @@ export function celebrate(){
   const count=ring?38:76,angle=i*Math.PI*2/count+(Math.random()-.5)*.04,speed=radius*(ring?.4:1)*(.78+Math.random()*.26),hue=(b.h+(ring?38:0)+(i%5)*3)%360;
   particles.push({x:b.x*width,y:b.y*height,vx:Math.cos(angle)*speed,vy:Math.sin(angle)*speed,age:0,life:1.35+Math.random()*.6,color:`hsl(${hue} 100% 58%)`,size:ring?1.6:2.3,seed:Math.random()*6});
  }}
- function draw(now){if(!overlay)return;if(start===undefined){start=now;last=now;}const t=(now-start)/1000,dt=Math.min((now-last)/1000,.04);last=now;
+ function draw(now){if(!overlay)return;if(start===undefined){start=now;last=now;}const speed=5000/duration,t=(now-start)/1000*speed,dt=Math.min((now-last)/1000,.04)*speed;last=now;
   ctx.globalCompositeOperation='destination-out';ctx.fillStyle=`rgba(0,0,0,${1-Math.exp(-dt*9)})`;ctx.fillRect(0,0,width,height);ctx.globalCompositeOperation='lighter';
   for(const b of bursts){if(!b.fired&&t>=b.t){b.fired=true;explode(b);}if(!b.fired&&t>=b.t-.28){const p=Math.max(0,(t-b.t+.28)/.28),x=b.x*width,y=height-(height-b.y*height)*p;ctx.strokeStyle=`hsla(${b.h} 100% 78% / .9)`;ctx.lineWidth=2;ctx.beginPath();ctx.moveTo(x,y+28);ctx.lineTo(x,y);ctx.stroke();}}
   for(const p of particles){const x=p.x,y=p.y;p.age+=dt;p.vx*=Math.exp(-dt*.72);p.vy=p.vy*Math.exp(-dt*.72)+dt*42;p.x+=p.vx*dt;p.y+=p.vy*dt;
@@ -25,7 +25,7 @@ export function celebrate(){
   }
   ctx.globalAlpha=1;particles=particles.filter(p=>p.age<p.life);if(t<4.9)frame=requestAnimationFrame(draw);else clearCelebration();
  }
- frame=requestAnimationFrame(draw);timer=setTimeout(clearCelebration,5300);hideListener=()=>{if(document.hidden)clearCelebration();};document.addEventListener('visibilitychange',hideListener);
+ frame=requestAnimationFrame(draw);timer=setTimeout(clearCelebration,duration);hideListener=()=>{if(document.hidden)clearCelebration();};document.addEventListener('visibilitychange',hideListener);
 }
 
 export function tossBomb(){
