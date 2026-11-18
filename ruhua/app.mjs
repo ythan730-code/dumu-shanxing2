@@ -1,6 +1,6 @@
 import {celebrate,clearCelebration,tossBomb} from './celebration.mjs?v=20261106-bomb-toss';
 import {reflectionMarkup,pickReflection,emptyReflection,assessReflection} from './reflection.mjs?v=20261106-bomb-toss';
-import {POEM,STAGES,freshState,normalize,sceneFor,advance,answer,noteText,questionPoints,scoreSummary} from './model.mjs?v=20261106-bomb-toss';
+import {POEM,STAGES,freshState,normalize,sceneFor,advance,answer,noteText,questionPoints,scoreSummary} from './model.mjs?v=20261118-poet-name';
 import {createAutumnWorld} from './world.mjs?v=20261101-single-background';
 import {createBookOpening} from './opening.mjs';
 import {HINTS,newReveal,latestReveal} from './learning-support.mjs?v=20261106-bomb-toss';
@@ -40,7 +40,9 @@ function render(){clearCelebration();const t=STAGES[state.stage];main.className=
  if(t.extraNarration)html+=`<p class="narration">${escape(t.extraNarration)}</p>`;
  if(t.extra)html+=speech(t.extra);
  if(HINTS[t.id])html+='<div class="hint-area"><button id="hint-button" type="button" aria-expanded="false" aria-controls="hint-content">提示</button><div id="hint-content" role="status" hidden></div></div>';
- if(t.kind==='quiz'){
+ if(t.kind==='identity'){
+ html+='<form id="poet-name-form"><label class="task" for="poet-name">你認為這位詩人是誰？</label><input id="poet-name" name="poet-name" type="text" placeholder="請輸入詩人姓名" autocomplete="off" autocapitalize="off" spellcheck="false" maxlength="20" aria-describedby="name-feedback"><p id="name-feedback" class="feedback" role="status" aria-live="polite"></p><div class="actions"><button type="submit" class="primary">確認姓名</button></div></form>';
+ }else if(t.kind==='quiz'){
  html+=`<fieldset><legend>${escape(t.question)}</legend>${t.options.map((v,i)=>`<label class="choice"><input type="radio" name="answer" value="${i}" ${state.choice===i?'checked':''} ${state.responses[t.id]?.includes(i)?'disabled':''}><span>${escape(v)}</span></label>`).join('')}</fieldset><p class="question-score">本題答對可得 ${questionPoints(state)} 分 · 如果你覺得有困難，可以使用提示，使用提示不扣分</p><p class="feedback" role="status">${escape(error)}</p><div class="actions"><button id="confirm" class="primary" ${state.choice===null?'disabled':''}>喚回記憶</button></div>`;
  }else if(t.kind==='share')html+=`${t.frame?`<p class="frame">${escape(t.frame)}</p>`:''}<p class="share-hint">先與同伴討論，再分享你的理由。</p><div class="actions"><button id="next" class="primary">${t.next}</button></div>`;
  else if(t.kind==='summary')html+=scoreCard()+`<div class="actions"><button id="next" class="primary">${t.next}</button></div>`;
@@ -70,6 +72,20 @@ function render(){clearCelebration();const t=STAGES[state.stage];main.className=
  $('#hint-button')?.addEventListener('click',()=>{hintLevel=(hintLevel+1)%3;syncHint();});
  panel.querySelectorAll('input[name=answer]').forEach(el=>el.addEventListener('change',()=>{state={...state,choice:Number(el.value)};error='';persist();$('#confirm').disabled=false;$('.feedback').textContent='';}));
  $('#confirm')?.addEventListener('click',()=>{const r=answer(state);if(r.error){state=r.state;error=r.error;persist();panel.querySelectorAll('input[name=answer]').forEach(el=>{el.checked=false;el.disabled=!!state.responses[STAGES[state.stage].id]?.includes(Number(el.value));});$('#confirm').disabled=true;$('.feedback').textContent=error;$('.question-score').textContent=`本題答對可得 ${questionPoints(state)} 分 · 如果你覺得有困難，可以使用提示，使用提示不扣分`;syncScore();}else setState(r.state);});
+ $('#poet-name-form')?.addEventListener('submit',e=>{
+  e.preventDefault();
+  const input=$('#poet-name');
+  if(e.isComposing)return;
+  const next=advance(state,input.value);
+  if(next===state){
+   input.setAttribute('aria-invalid','true');
+   $('#name-feedback').textContent=input.value.trim()?'再看看書中的詩句，想一想作者是誰。':'請先輸入詩人姓名。';
+   input.focus();
+   return;
+  }
+  setState(next);
+ });
+ $('#poet-name')?.addEventListener('input',e=>{e.target.removeAttribute('aria-invalid');$('#name-feedback').textContent='';});
  $('#next')?.addEventListener('click',()=>setState(advance(state)));
 }
 function showModal(kind){stopReveal();let html='';if(kind==='poem')html=`<p class="kicker">重讀詩句，找出線索</p><h2 style="text-align:center">山行</h2><p class="author">〔唐〕杜牧</p><div class="poem-text">${POEM.map(l=>`<div>${l}</div>`).join('')}</div>`;

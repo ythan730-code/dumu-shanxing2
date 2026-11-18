@@ -2,7 +2,7 @@ import {emptyReflection,normalizeReflection} from './reflection.mjs';
 export const POEM=['遠上寒山石徑斜','白雲生處有人家','停車坐愛楓林晚','霜葉紅於二月花'];
 export const STAGES=[
  {id:'visitor',kind:'intro',title:'課本中的來客',speaker:'陌生男子',speech:'這是何處？我怎麼會來到這裏？',next:'你是誰？'},
- {id:'name',kind:'intro',title:'兩張褪色的詩箋',speaker:'陌生男子',speech:'我……記不起來了。身上只剩這兩張詩箋。',next:'你可能就是杜牧'},
+ {id:'name',kind:'identity',title:'兩張褪色的詩箋',speaker:'陌生男子',speech:'我……記不起來了。身上只剩這兩張詩箋。',next:'確認姓名'},
  {id:'enter',kind:'intro',title:'一座似曾相識的山',speaker:'杜牧',speech:'杜牧……這名字很熟悉。似乎就是我呢！我眼前的這座山也很熟悉，我好像認得它，請陪我進去看看。',next:'走進秋山'},
  {id:'road-material',kind:'quiz',memory:1,title:'上山的路',poem:0,speech:'我記得自己向山上走去……腳下是一條怎樣的路？',question:'請根據本句古詩，哪一條路符合杜牧記憶中的路？',options:['石頭鋪成的小路','滿是泥土的小路','溪流和鮮花環繞的小路'],correct:0,hint:'這個景象還是有些模糊。再看看「石徑」，哪個字告訴我們路的材料？'},
  {id:'road-direction',kind:'quiz',memory:1,title:'石徑通往哪裏？',poem:0,speech:'是石頭路！可是……我記得自己還沿着它往山上走。這條路的走向，好像還沒有恢復。',question:'請根據本句古詩，哪一種走向符合「遠上寒山石徑斜」？',options:['沿山坡蜿蜒曲折地向高處延伸','在山腳的平地上蜿蜒延伸','在山腳的平地上筆直延伸','沿山坡向低處延伸'],correct:0,hint:'再看看「遠上」和「斜」。這條石徑，是沿着山坡向哪裏伸去的？'},
@@ -44,7 +44,7 @@ export function normalize(raw){const s=freshState();if(!raw||raw.version!==1)ret
  return s;
 }
 export function sceneFor(s){const n=s.stage;return {flatRoad:n===4,road:n>=5,clouds:n>=7,houses:n>=9,forest:n>=11,cart:n>=14,leaves:n>=17?'red':n>=16?'pale':'mist',evening:n>=11,full:n>=18,poet:n>=2,poetPlace:n<6?'foot':n<8?'trail':n<10?'high':'maple',gaze:n>=14};}
-export function advance(s){const n={...s,choice:null};const stage=STAGES[s.stage];if(!stage||stage.kind==='quiz'||stage.kind==='reflection')return s;if(stage.id==='red-share')n.sharedRed=true;n.stage=Math.min(STAGES.length-1,s.stage+1);return n;}
+export function advance(s,poetName){const n={...s,choice:null};const stage=STAGES[s.stage];if(stage?.kind==='identity'&&String(poetName??'').trim()!=='杜牧')return s;if(!stage||stage.kind==='quiz'||stage.kind==='reflection')return s;if(stage.id==='red-share')n.sharedRed=true;n.stage=Math.min(STAGES.length-1,s.stage+1);return n;}
 export function questionPoints(s){const t=STAGES[s.stage];return Math.max(0,2-(s.responses?.[t?.id]?.length||0));}
 export function scoreSummary(s){
  let points=0,completed=0,firstTry=0,eligible=0,legacy=0;

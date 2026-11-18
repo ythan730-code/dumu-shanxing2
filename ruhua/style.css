@@ -146,3 +146,5 @@ label.choice:has(input:disabled){opacity:.48;cursor:default}
 
 .student-activity-link{display:inline-flex;align-items:center;min-height:44px;padding:6px 12px;color:#fff3dc;text-decoration:none;border:1px solid #f1e4c860;border-radius:22px;background:#233e33bb;font-size:13px;white-space:nowrap}
 @media(max-width:480px){.student-activity-link{padding-inline:8px;font-size:12px}}
+
+#poet-name-form>label{display:block;margin-bottom:10px}#poet-name{display:block;width:100%;box-sizing:border-box;min-height:48px;padding:10px 12px;font-family:var(--reading-font);font-size:18px;background:#f8f0df;color:#293e34;border:1px solid #c5b895;border-radius:3px}#poet-name[aria-invalid="true"]{border-color:#e9b786}#name-feedback:empty{display:none}
