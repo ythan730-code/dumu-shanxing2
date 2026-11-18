@@ -49,7 +49,7 @@ function render(){clearCelebration();const t=STAGES[state.stage];main.className=
  else if(t.kind==='reflection')html+=`<p class="task">${escape(t.question)}</p><p class="task">${escape(t.followup)}</p><p class="share-hint">先圈選，再與同伴討論，並用詩中的字詞分享你的想法。</p><div id="reflection-picker">${reflectionMarkup(state.reflection,reflectionMode,reflectionShared)}</div>`;
  else if(t.kind==='free')html+='<p>拖曳看景、雙指縮放，從不同角度看看秋山。</p>';
  else html+=`<div class="actions"><button id="next" class="primary">${escape(t.next)}</button></div>`;
- if(state.stage>=18)html+='<div class="memory-end-actions"><button id="revisit-mountain" type="button">再賞秋山</button><a class="primary" href="appreciation.html" target="_blank" rel="noopener noreferrer">教師帶領賞詩 ↗</a></div>';
+ if(state.stage>=18)html+='<div class="memory-end-actions"><button id="revisit-mountain" type="button">再賞秋山</button><a class="primary" href="https://dumu-autumn-memory.kkt88707.chatgpt.site/api/teacher-appreciation" target="_blank" rel="noopener noreferrer">教師帶領賞詩 ↗</a></div>';
  panel.innerHTML=html;panel.scrollTop=0;syncHint();
  $('#reflection-picker')?.addEventListener('click',e=>{
   const button=e.target.closest('button');if(!button||button.disabled)return;
