@@ -11,7 +11,7 @@ function bytes(base64) {
 }
 
 async function decryptLesson(password) {
-  const response = await fetch(new URL('ruhua/teacher-lesson.enc.json?v=20261118-encrypted', root), {cache: 'no-store'});
+  const response = await fetch(new URL('ruhua/teacher-lesson.enc.json?v=20261120-complete-v2', root), {cache: 'no-store'});
   if (!response.ok) throw new Error('load');
   const envelope = await response.json();
   if (envelope.version !== 1 || envelope.iterations !== 600000) throw new Error('format');

@@ -15,9 +15,10 @@ export function assessReflection(raw){
  const sceneryWords=Object.values(OLD_RANGES).slice(0,6).flat();
  if(s.scenery.some(n=>[25,26,27].includes(n)))return {status:'retry',reason:'comparison',message:'再讀一讀：你圈出的每一處，都是此次山行看到的景物嗎？有沒有用來比較的景物？'};
  if(s.scenery.some(n=>!sceneryWords.includes(n)))return {status:'retry',reason:'word',message:'看看圈選的字能否組成景物的名稱。有沒有把動作或描述的字也圈進去了？'};
- const maple=has([18,19],s.favorite)&&s.favorite.every(n=>[18,19,20].includes(n));
- const leaf=has([21,22],s.favorite)&&s.favorite.every(n=>[21,22].includes(n));
- if(!maple&&!leaf)return {status:'retry',reason:'favorite',message:'重新讀一讀詩人停下來的那一句。你標上愛心的字，能否組成他最喜歡的景物名稱？'};
+ const maple=has([18,19],s.favorite),leaf=has([21,22],s.favorite);
+ // Accept either complete name or both, while rejecting partial names and extra characters.
+ const favoriteWords=[...(maple?[18,19,20]:[]),...(leaf?[21,22]:[])];
+ if((!maple&&!leaf)||s.favorite.some(n=>!favoriteWords.includes(n)))return {status:'retry',reason:'favorite',message:'重新讀一讀詩人停下來的那一句。你標上愛心的字，能否組成他最喜歡的景物名稱？'};
  if(![[2,3],[4,5],[7,8],[12,13]].every(r=>has(r,s.scenery))||![[18,19],[21,22]].some(r=>has(r,s.scenery)))return {status:'retry',reason:'missing',message:'再逐句讀一次，檢查是否漏了景物，或少圈了詞語中的字。'};
  // Selected synonyms may both be marked, but each marked name must be complete.
  if(Object.values(OLD_RANGES).slice(0,6).some(r=>r.some(n=>s.scenery.includes(n))&&!has(r,s.scenery)))return {status:'retry',reason:'word',message:'有些景物名稱還沒有圈完整。再看看相鄰的字。'};

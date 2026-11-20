@@ -1,5 +1,5 @@
 import {celebrate,clearCelebration,tossBomb} from './celebration.mjs?v=20261118-fireworks-2s';
-import {reflectionMarkup,pickReflection,emptyReflection,assessReflection} from './reflection.mjs?v=20261106-bomb-toss';
+import {reflectionMarkup,pickReflection,emptyReflection,assessReflection} from './reflection.mjs?v=20261120-complete-v2';
 import {POEM,STAGES,freshState,normalize,sceneFor,advance,answer,noteText,questionPoints,scoreSummary} from './model.mjs?v=20261118-poet-name';
 import {createAutumnWorld} from './world.mjs?v=20261101-single-background';
 import {createBookOpening} from './opening.mjs';
